@@ -1,97 +1,92 @@
-/* General Body Styling */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
-    background-color: #f0f2f5;
-    margin: 0;
-}
-
-/* Calculator Container */
-.calculator {
-    background-color: #fff;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    background-color: #f4f4f9;
+}
+h2 {
+    color: #333;
 }
 
-/* The Display Screen */
-#display {
+/* NEW: Styles for the grouped container */
+.grouped-calculations {
+    /* Adds a large space *after* the Predicted Respiratory Rate table */
+    margin-bottom: 50px; 
     width: 100%;
-    height: 50px;
-    background-color: #222;
-    color: #fff;
-    text-align: right;
-    border: none;
-    border-radius: 5px;
-    font-size: 2rem;
-    padding: 10px;
-    margin-bottom: 20px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Button Layout */
-.keys {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+table {
+    border-collapse: collapse;
+    width: 85%; 
+    max-width: 800px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    table-layout: fixed;
+    /* IMPORTANT: Reduced margin-bottom to pull grouped tables closer */
+    margin-bottom: 10px; 
 }
 
-/* Button Styling */
-button {
-    height: 60px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #e0e0e0;
-    transition: background-color 0.2s;
+/* Targets the columns within the first and third tables (3 columns total) */
+table:nth-of-type(1) th:nth-child(1),
+table:nth-of-type(3) th:nth-child(1) { width: 45%; } /* Variable Name Column */
+table:nth-of-type(1) th:nth-child(2),
+table:nth-of-type(3) th:nth-child(2) { width: 30%; } /* Value Column */
+table:nth-of-type(1) th:nth-child(3),
+table:nth-of-type(3) th:nth-child(3) { width: 25%; } /* Units Column */
+
+/* Targets the columns within the second table (2 columns total) */
+table:nth-of-type(2) th:nth-child(1) { width: 70%; } /* Variable Name Column */
+table:nth-of-type(2) th:nth-child(2) { width: 30%; } /* Value/Input Column */
+
+/* Target the result cell (second column) in the final table */
+table:nth-of-type(5) td:nth-child(2) {
+    text-align: right; /* Right-align the number so it sits close to the unit dropdown */
+    padding-right: 5px; /* Reduce padding slightly */
 }
 
-button:hover {
-    background-color: #d4d4d4;
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
 }
-
-button:active {
-    background-color: #bfbfbf;
-}
-
-/* Operator Buttons (orange) */
-.operator-btn {
-    background-color: #ff9f43;
+th {
+    background-color: #007bff;
     color: white;
 }
-
-.operator-btn:hover {
-    background-color: #ff8c1a;
-}
-
-/* Clear Button (red) */
-.clear-btn {
-    background-color: #ff6b6b;
+.table-title {
+    background-color: #34495e;
     color: white;
-    grid-column: span 2;
+    font-size: 1.3em;
+    padding: 15px;
 }
 
-.clear-btn:hover {
-    background-color: #fa4f4f;
+/* Ensures inputs and selects perfectly fill the table cell */
+input[type="number"], select {
+    width: 100%; /* Make it fill the cell width */
+    /* Box-sizing ensures padding and border are included INSIDE the 100% width, preventing overflow */
+    box-sizing: border-box; 
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1em;
 }
 
-/* Equals Button (green) */
-.equal-btn {
-    background-color: #1dd1a1;
-    color: white;
-    grid-column: span 2;
+.result-row td {
+    background-color: #d4edda;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #155724;
 }
 
-.equal-btn:hover {
-    background-color: #10ac84;
-}
-
-/* Zero Button (Span 2 columns) */
-.span-two {
-    grid-column: span 2;
+/* We need to apply a larger bottom margin to the tables *after* the grouped-calculations div to ensure the subsequent tables still have space below them. */
+/* Target tables that are NOT inside the grouped-calculations div */
+body > table:nth-of-type(1),
+body > table:nth-of-type(2) {
+    margin-bottom: 20px; 
 }
