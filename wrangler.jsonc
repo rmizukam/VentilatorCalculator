@@ -1,5 +1,9 @@
+// wrangler.jsonc
 {
-    "name": "worker-name",
-    "compatibility_date": "2025-12-06",
-    "main": "src/index.ts"
+  "name": "ventilatorcalculator",
+  "pages_build_output_dir": ".",
+  "compatibility_date": "2024-01-01",
+  "assets": {
+    "directory": "."
+  }
 }
