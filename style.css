@@ -4,7 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px; /* Reduced padding for small screens */
     background-color: #f4f4f9;
 }
 h2 {
@@ -13,8 +13,8 @@ h2 {
 
 /* --- Container Styles --- */
 .patient-inputs, .grouped-calculations {
-    margin-bottom: 20px; /* Use a consistent margin for separation */
-    width: 100%;
+    margin-bottom: 20px;
+    width: 100%; /* Ensure full width usage on mobile */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,12 +23,12 @@ h2 {
 /* --- Table Styles --- */
 table {
     border-collapse: collapse;
-    width: 85%; 
+    width: 95%; /* Increased width percentage for better mobile screen use */
     max-width: 800px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     table-layout: fixed;
-    margin-bottom: 20px; /* Consistent spacing between all standalone tables */
+    margin-bottom: 20px;
 }
 
 /* Targets the Tidal Volume table specifically for tighter spacing within the patient inputs block */
@@ -39,8 +39,9 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 12px;
+    padding: 8px; /* Reduced padding for smaller cells */
     text-align: center;
+    word-wrap: break-word; /* Prevents long text from breaking layout */
 }
 th {
     background-color: #007bff;
@@ -49,12 +50,11 @@ th {
 .table-title {
     background-color: #34495e;
     color: white;
-    font-size: 1.3em;
-    padding: 15px;
+    font-size: 1.1em; /* Smaller title font on mobile */
+    padding: 10px;
 }
 
 /* --- Input & Select Styles --- */
-/* Ensures ALL inputs and selects fill the cell width (100%) */
 input[type="number"], input[type="text"], select {
     width: 100%; 
     box-sizing: border-box; 
@@ -69,7 +69,7 @@ input[type="number"], input[type="text"], select {
 .result-row td {
     background-color: #d4edda;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.1em; /* Slightly smaller font */
     color: #155724;
 }
 
@@ -100,19 +100,46 @@ input[type="number"], input[type="text"], select {
     display: flex;
     align-items: baseline; 
     gap: 5px; 
-    /* The unit needs to take up minimal space so the input can grow */
     width: 100%; 
 }
 
-/* 4. REMOVED fixed width for #tv-value-1, #tv-value-2, #tv-value-3.
-   They now inherit the 100% width from the global input rule above, 
-   making them the same size as the custom input box (#tv-value-4). */
-
-/* 5. Override default 100% width for the unit span */
+/* 4. Style the unit text */
 .tv-unit-text {
-    /* Ensures unit text only takes up the space it needs */
     width: auto; 
     font-size: 0.9em;
     color: #555;
-    text-align: left; /* Keep unit text aligned to the left of the cell */
+    text-align: left; 
+    /* Ensures the unit text is not condensed when the input is focused */
+    flex-shrink: 0; 
+}
+
+/* 5. Mobile Optimization: Restructure the Tidal Volume Selection table */
+@media (max-width: 600px) {
+    /* Collapse the four columns into one column by making each TD full width */
+    .patient-inputs table:nth-of-type(2) tbody tr td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom: none; /* Remove horizontal border between options */
+        border-left: none;
+        border-right: none;
+    }
+    
+    /* Re-add a separating border to the bottom of each cell for clarity */
+    .patient-inputs table:nth-of-type(2) tbody tr td:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Adjust the main tables for better readability on small screens */
+    table {
+        table-layout: auto; /* Allow column widths to adjust */
+    }
+
+    /* Target the parameter/variable name columns and give them more space */
+    .patient-inputs table:first-child td:first-child,
+    .grouped-calculations table td:first-child,
+    body > table:nth-of-type(3) td:first-child, /* Adjustment 1 */
+    body > table:nth-of-type(4) td:first-child { /* Adjustment 2 */
+        text-align: left;
+    }
 }
