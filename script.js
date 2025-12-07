@@ -128,7 +128,7 @@ function calculateRRAdjustment(){
 }
 
 /**
- * Calculates the Tidal Volume (RR).
+ * Calculates the Adjusted Tidal Volume (TV).
  * Formula: TV_A (L) = (TV_curr (L) * PaCo2_curr (mmHg)) / PaCo2_des (mmHg)
  */
 function calculateTVAdjustment(){
@@ -148,6 +148,25 @@ function calculateTVAdjustment(){
         }
     }
     document.getElementById('result-adjusted-tv').textContent = adjustedTV.toFixed(2);
+}
+
+/**
+ * Toggles the visibility of the calculation notes section.
+ * @param {HTMLElement} header - The clicked header element (h3).
+ */
+function toggleNotes(header) {
+    // Get the next sibling element, which is the notes-content div
+    const content = header.nextElementSibling;
+    
+    if (content.style.display === "block") {
+        content.style.display = "none";
+        // Update the header text when collapsing
+        header.innerHTML = '&#9432; Equation Notes & Formulas';
+    } else {
+        content.style.display = "block";
+        // Update the header text when expanding
+        header.innerHTML = '&#9432; Equation Notes & Formulas (Click to Hide)';
+    }
 }
 
 // Initialize calculations on load

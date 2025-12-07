@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ventilator Adjustment Calculcator</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <h2>Ventilator Settings Calculator</h2>
+
     <div class="patient-inputs">
         <table>
             <thead>
@@ -15,7 +18,7 @@
                     <th colspan="3" class="table-title">Patient Inputs</th>
                 </tr>
                 <tr>
-                    <th>Input Name</th>
+                    <th>Parameter</th>
                     <th>Value</th>
                     <th>Unit</th>
                 </tr>
@@ -26,7 +29,7 @@
                     <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
                         <select id="pi_height_unit" onchange="calculatePVS()">
-                            <option value="in" selected>in</option>
+                            <option value="in">in</option>
                             <option value="cm">cm</option>
                         </select>
                     </td>
@@ -36,26 +39,27 @@
                     <td><input type="number" id="pi_weight_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
                         <select id="pi_weight_unit" onchange="calculatePVS()">
-                            <option value="kg" selected>kg</option>
                             <option value="lb">lb</option>
+                            <option value="kg">kg</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <td>Gender (M/F)</td>
+                    <td>Gender</td>
                     <td colspan="2">
                         <select id="pi_gender_unit" onchange="calculatePVS()">
-                            <option value="M" selected>M</option>
-                            <option value="F">F</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
                         </select>
                     </td>
                 </tr>
             </tbody>
         </table>
+
         <table>
             <thead>
                 <tr>
-                    <th colspan="4">Tidal Volume Selection</th>
+                    <th colspan="4" class="table-title">Tidal Volume Selection (ml/kg IBW)</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,11 +67,11 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-option-1" name="choice" value="tvoption1" onchange="calculatePVS()">
-                                <label for="tv-option-1">6 ml/kg</label>
+                                <input type="radio" id="tv-radio-1" name="choice" value="tvoption1" onchange="calculatePVS()">
+                                <label for="tv-radio-1">6 ml/kg</label>
                             </div>
                             <div class="tv-value-unit">
-                                <input type="text" id="tv-value-1" name="tvvalue1" readonly class="tv-value-input">
+                                <input type="text" id="tv-value-1" name="tvvalue1" readonly>
                                 <span class="tv-unit-text">mL</span>
                             </div>
                         </div>
@@ -75,8 +79,8 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-option-2" name="choice" value="tvoption2" onchange="calculatePVS()">
-                                <label for="tv-option-2">7 ml/kg</label>
+                                <input type="radio" id="tv-radio-2" name="choice" value="tvoption2" onchange="calculatePVS()">
+                                <label for="tv-radio-2">7 ml/kg</label>
                             </div>
                             <div class="tv-value-unit">
                                 <input type="text" id="tv-value-2" name="tvvalue2" readonly>
@@ -87,8 +91,8 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-option-3" name="choice" value="tvoption3" onchange="calculatePVS()">
-                                <label for="tv-option-3">8 ml/kg</label>
+                                <input type="radio" id="tv-radio-3" name="choice" value="tvoption3" onchange="calculatePVS()" checked>
+                                <label for="tv-radio-3">8 ml/kg</label>
                             </div>
                             <div class="tv-value-unit">
                                 <input type="text" id="tv-value-3" name="tvvalue3" readonly>
@@ -99,11 +103,11 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-option-4" name="choice" value="tvoption4" onchange="calculatePVS()" onfocus="selectOnFocus(this)">
-                                <label for="tv-option-4">Custom</label>
+                                <input type="radio" id="tv-radio-4" name="choice" value="tvoption4" onchange="calculatePVS()">
+                                <label for="tv-radio-4">Custom</label>
                             </div>
                             <div class="tv-value-unit">
-                                <input type="number" id="tv-value-4" name="tvvalue4">
+                                <input type="number" id="tv-value-4" name="tvvalue4" oninput="calculatePVS()" onfocus="selectOnFocus(this)">
                                 <span class="tv-unit-text">mL</span>
                             </div>
                         </div>
@@ -112,7 +116,6 @@
             </tbody>
         </table>
     </div>
-
     <div class="grouped-calculations">
         <table>
             <thead>
@@ -143,72 +146,97 @@
                 </tr>
             </tbody>
         </table>
-    </div> 
-
+        
+        <div class="calculation-notes">
+            <h3 class="notes-header" onclick="toggleNotes(this)">
+                &#9432; Equation Notes & Formulas
+            </h3>
+            <div class="notes-content">
+                <h4>IBW (Ideal Body Weight)</h4>
+                <p>Used to calculate predicted Tidal Volume based on patient Height and Gender (Height >= 60 in):</p>
+                $$ \text{IBW (kg)} = \begin{cases} 50 + 2.3 \times (\text{Height (in)} - 60) & \text{for Males} \\ 45.5 + 2.3 \times (\text{Height (in)} - 60) & \text{for Females} \end{cases} $$
+                <p>Note: When patient height is less than 60 in then generic formula not gener reliant is utilized.</p>
+                $$\text{IBW (kg)} = 0.9 - (2.3 \times (60 - \text{Height(in)}))$$
+                
+                <h4>BSA (Body Surface Area)</h4>
+                <p>Calculated using the Mosteller Formula, where height is in cm and weight is in kg:</p>
+                $$ \text{BSA (m}^2) = \sqrt{\frac{\text{Height (cm)} \times \text{Weight (kg)}}{3600}} $$
+                
+                <h4>Predicted Minute Ventilation (MV)</h4>
+                <p>Calculated using gender-specific factors based on BSA:</p>
+                $$ \text{MV (L/min)} = \text{BSA} \times \begin{cases} 4.0 & \text{for Males} \\ 3.5 & \text{for Females} \end{cases} $$
+                
+                <h4>Predicted Respiratory Rate (RR)</h4>
+                <p>Calculated by dividing the predicted minute ventilation by the selected tidal volume (converted to Liters):</p>
+                $$ \text{RR} = \frac{\text{Predicted MV (L/min)}}{\text{Tidal Volume (L)}} $$
+            </div>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
-                <th colspan="2" class="table-title">Adjustment 1: Repiratory Rate</th> 
+                <th colspan="3" class="table-title">Adjustment 1: Respiratory Rate (RR)</th>
             </tr>
             <tr>
-                <th>Variable Name</th>
-                <th>Value (Input)</th>
+                <th>Current RR (breaths/min)</th>
+                <th>Current PaCO2 (mmHg)</th>
+                <th>Desired PaCO2 (mmHg)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Current Respiratory Rate (breaths/min)</td>
                 <td><input type="number" id="curr-rr-input" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
-            </tr>
-            <tr>
-                <td>Current PaCO<sub>2</sub> (mmHg)</td> 
                 <td><input type="number" id="curr-pac02-rr" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
-            </tr>
-            <tr>
-                <td>Desired PaCO<sub>2</sub> (mmHg)</td> 
                 <td><input type="number" id="desired-pac02-rr" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr class="result-row">
-                <td>Adjusted Respiratory Rate (breaths/min)</td>
-                <td id="result-adjusted-rr" >0.00</td> </tr>
+                <td colspan="2">Adjusted RR</td>
+                <td id="result-adjusted-rr">0.00</td>
+            </tr>
         </tbody>
     </table>
 
+    <div class="calculation-notes">
+        <h3 class="notes-header" onclick="toggleNotes(this)">
+            &#9432; Equation Notes & Formulas
+        </h3>
+        <div class="notes-content">
+            <h4>Adjusted Respiratory Rate (RR)</h4>
+            <p>Calculated using the relationship between minute ventilation and PaCO2 (V̇E × PaCO2 = constant). This formula adjusts the respiratory rate to achieve a desired PaCO2 level, assuming tidal volume is held constant.</p>
+            $$ \text{RR}_{\text{adj}} = \frac{\text{RR}_{\text{curr}} \times \text{PaCO}_{\text{2\_curr}}}{\text{PaCO}_{\text{2\_des}}} $$
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
-                <th colspan="3" class="table-title">Adjustment 2: Tidal Volume</th> 
+                <th colspan="5" class="table-title">Adjustment 2: Tidal Volume (TV)</th>
             </tr>
             <tr>
-                <th>Variable Name</th>
-                <th colspan="2">Value (Input)</th>
+                <th colspan="2">Current TV</th>
+                <th colspan="2">Current PaCO2 (mmHg)</th>
+                <th>Desired PaCO2 (mmHg)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Current Tidal Volume </td>
                 <td><input type="number" id="curr-tv-input" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
                 <td>
                     <select id="tidal-volume-unit-adj-in" onchange="calculateTVAdjustment()">
-                        <option value="mL" selected>mL</option>
+                        <option value="mL">mL</option>
                         <option value="L">L</option>
                     </select>
                 </td>
-            </tr>
-            <tr>
-                <td>Current PaCO<sub>2</sub> (mmHg)</td> 
+                
                 <td colspan="2"><input type="number" id="curr-pac02-tv" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
-            </tr>
-            <tr>
-                <td>Desired PaCO<sub>2</sub> (mmHg)</td> 
-                <td colspan="2"><input type="number" id="desired-pac02-tv" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
+                
+                <td><input type="number" id="desired-pac02-tv" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr class="result-row">
-                <td>Adjusted Tidal Volume</td>
-                <td id="result-adjusted-tv" >0.00</td>
+                <td colspan="2">Adjusted TV</td>
+                <td id="result-adjusted-tv" colspan="2">0.00</td>
                 <td>
                     <select id="tidal-volume-unit-adj-out" onchange="calculateTVAdjustment()">
-                        <option value="mL" selected>mL</option>
+                        <option value="mL">mL</option>
                         <option value="L">L</option>
                     </select>
                 </td>
@@ -216,6 +244,17 @@
         </tbody>
     </table>
 
+    <div class="calculation-notes">
+        <h3 class="notes-header" onclick="toggleNotes(this)">
+            &#9432; Equation Notes & Formulas
+        </h3>
+        <div class="notes-content">
+            <h4>Adjusted Tidal Volume (TV)</h4>
+            <p>Calculated using the relationship between minute ventilation and PaCO2 (V̇E × PaCO2 = constant). This formula adjusts the tidal volume to achieve a desired PaCO2 level, assuming respiratory rate is held constant.</p>
+            <p>Note: Input and output units (Liters or mL) are handled by the calculator's JavaScript before and after applying the formula.</p>
+            $$\text{TV}_{\text{adj}} = \frac{\text{TV}_{\text{curr}} \times \text{PaCO}_{\text{2\_curr}}}{\text{PaCO}_{\text{2\_des}}} $$
+        </div>
+    </div>
     <script src="script.js"></script>
-</body>
+    </body>
 </html>
