@@ -1,4 +1,4 @@
-// Global conversion constant (1 Liter = 1000 Milliliters)
+// Global conversion constant
 const ML_PER_LITER = 1000;
 const CM_PER_IN = 2.54;
 const KG_PER_LB = 0.453592; // 1 lb = 0.453592 kg
@@ -34,7 +34,6 @@ function getSelectedTidalVolume() {
         // 2. Determine the ID of the associated text input field
         let valueElementId = '';
         
-        // The value of the radio button corresponds to the value input ID suffix
         if (checkedRadio.value === 'tvoption1') {
             valueElementId = 'tv-value-1'; // 6 ml/kg
         } else if (checkedRadio.value === 'tvoption2') {
@@ -48,7 +47,6 @@ function getSelectedTidalVolume() {
         // 3. Get the value from the corresponding input field
         const valueElement = document.getElementById(valueElementId);
         if (valueElement) {
-            // Use parseFloat to convert the string value to a number
             selectedTV = parseFloat(valueElement.value) || 0;
         }
     }
@@ -60,16 +58,24 @@ function getSelectedTidalVolume() {
  */
 function calculatePVS(){
 
-    // Gather initial inputs
+    // Gather raw inputs
     let height = parseFloat(document.getElementById('pi_height_input').value) || 0;
     const heightUnit = document.getElementById('pi_height_unit').value;
     let weight = parseFloat(document.getElementById('pi_weight_input').value) || 0;
     const weightUnit = document.getElementById('pi_weight_unit').value;
+    const genderUnit = document.getElementById('pi_gender_unit').value;
     
+    // --- 1. Height and Weight Standardization ---
+
+    // Standardize Height to inches (in) for IBW calculation
+    let height_in = height;
+    if (heightUnit === 'cm') {
+        height_in = height / CM_PER_IN;
+    }
+    
+    // Standardize Height to cm and Weight to kg for BSA calculation
     let height_cm = height;
     let weight_kg = weight;
-    
-    // Convert inputs to metric base units (cm and kg) for calculation
     if (heightUnit === 'in') {
         height_cm = height * CM_PER_IN;
     }
@@ -77,34 +83,21 @@ function calculatePVS(){
         weight_kg = weight * KG_PER_LB;
     }
     
-    const genderUnit = document.getElementById('pi_gender_unit').value;
-
-    // Calcuate Tidal Volume Selection Zone (using original input height in inches for IBW)
+    // --- 2. IBW (Ideal Body Weight) Calculation ---
     let ibw = 0.00;
-    // Note: The IBW formula here assumes height input is in inches for the 60 in cutoff, 
-    // but the calculation uses the 'height' variable which is the raw value from the input field.
-    if (height >= 60 && genderUnit == 'M'){
-        ibw = 50 + (2.3 * (height - 60));
-    } else if (height >= 60 && genderUnit == 'F'){
-        ibw = 45.5 + (2.3 * (height - 60));
-    } else { 
-        // Logic for height less than 60 inches is often simplified, 
-        // but the original logic was complex. Let's ensure 'height' is in inches if heightUnit is 'in'
-        // Since height is raw input, if unit is 'cm', this section might not be correct 
-        // without converting 'height' back to inches first. 
-        // ASSUMING: The user is only using the height input in inches for the IBW check here.
-        
-        // To be safe, let's derive height_in:
-        let height_in = (heightUnit === 'in') ? height : (height / CM_PER_IN);
-
-        if (height_in < 60) {
-            // Placeholder: Typically, IBW formula is complex for short patients or uses 
-            // a simplified formula like the male formula regardless of gender for consistency.
+    
+    // IBW must use height in inches (height_in)
+    if (height_in > 0) { // Only calculate if height is valid
+        if (height_in >= 60) {
+            if (genderUnit == 'M') {
+                ibw = 50 + (2.3 * (height_in - 60));
+            } else if (genderUnit == 'F') {
+                ibw = 45.5 + (2.3 * (height_in - 60));
+            }
+        } else { 
+            // For height less than 60 in, use a standardized approach (often the male formula)
             // Sticking to the most direct interpretation of the non-standard formula you provided previously:
-            ibw = 50 + ((2 * KG_PER_LB) * (height_in - 60)); 
-            
-            // NOTE: A more standard approach for height < 60 in is often just using the male formula:
-            // ibw = 50 + (2.3 * (height_in - 60));
+            ibw = 50 + ((2 * KG_PER_LB) * (height_in - 60));
         }
     }
 
@@ -113,13 +106,13 @@ function calculatePVS(){
     let tv_8mlkg = ibw * 8;
     
     // Update the Tidal Volume fields if we have valid inputs
-    if (height_cm > 0 && weight_kg > 0){
+    if (height_in > 0 && weight_kg > 0){
         document.getElementById("tv-value-1").value = tv_6mlkg.toFixed(2);
         document.getElementById("tv-value-2").value = tv_7mlkg.toFixed(2);
         document.getElementById("tv-value-3").value = tv_8mlkg.toFixed(2);
     }
 
-    // predicted body surface area (BSA)
+    // --- 3. BSA (Body Surface Area) Calculation ---
     let predicted_bsa = 0.00;
     if (height_cm > 0 && weight_kg > 0) {
         const valueInsideRoot = (height_cm * weight_kg) / 3600;
@@ -128,26 +121,64 @@ function calculatePVS(){
     const formattedBSA = predicted_bsa.toFixed(2);
     document.getElementById('pr-bsa').textContent = formattedBSA;
 
-    // predicted minute ventilation (MV)
+    // --- 4. Predicted MV (Minute Ventilation) ---
     let predictedMVFactor = (genderUnit === 'M') ? 4 : 3.5;
-    let predicted_mv = 0.00;
-    predicted_mv = predicted_bsa * predictedMVFactor;
+    let predicted_mv = predicted_bsa * predictedMVFactor;
     const formattedMV = predicted_mv.toFixed(2);
     document.getElementById('pr-mv').textContent = formattedMV;
 
-    // predicted respiratory rate (RR)
+    // --- 5. Predicted RR (Respiratory Rate) ---
     const tidalVolume = getSelectedTidalVolume(); // Already in mL
     let predicted_rr = 0.00;
     if (tidalVolume > 0 && predicted_mv > 0){
-        // predicted_mv is in L/min, tidalVolume must be converted to L
+        // predicted_mv is in L/min, tidalVolume (mL) converted to L
         predicted_rr = predicted_mv / (tidalVolume / ML_PER_LITER);
     }
     document.getElementById('pr-rr').textContent = predicted_rr.toFixed(2);
 }
 
 /**
+ * Converts the value in the input field based on the old and new unit
+ * and then triggers the main calculation.
+ * @param {string} inputId - The ID of the input field (e.g., 'pi_height_input').
+ * @param {string} unitId - The ID of the unit select (e.g., 'pi_height_unit').
+ * @param {number} conversionFactor - The factor for conversion (CM_PER_IN or KG_PER_LB).
+ */
+function convertUnitAndCalculate(inputId, unitId, conversionFactor) {
+    const inputElement = document.getElementById(inputId);
+    const unitElement = document.getElementById(unitId);
+    let value = parseFloat(inputElement.value) || 0;
+    
+    const previousUnit = unitElement.getAttribute('data-previous-unit');
+    const currentUnit = unitElement.value;
+
+    if (previousUnit && previousUnit !== currentUnit) {
+        if (unitId === 'pi_height_unit') {
+            // Height: in <-> cm
+            if (currentUnit === 'cm' && previousUnit === 'in') {
+                value = value * conversionFactor; // inches to cm
+            } else if (currentUnit === 'in' && previousUnit === 'cm') {
+                value = value / conversionFactor; // cm to inches
+            }
+        } else if (unitId === 'pi_weight_unit') {
+            // Weight: lb <-> kg
+            if (currentUnit === 'kg' && previousUnit === 'lb') {
+                value = value * conversionFactor; // lb to kg
+            } else if (currentUnit === 'lb' && previousUnit === 'kg') {
+                value = value / conversionFactor; // kg to lb
+            }
+        }
+        
+        inputElement.value = value.toFixed(2);
+    }
+    
+    unitElement.setAttribute('data-previous-unit', currentUnit);
+
+    calculatePVS();
+}
+
+/**
  * Calculates the Adjusted Respiratory Rate (RR).
- * Formula: RR_A = (RR_curr * PaCo2_curr) / PaCo2_des
  */
 function calculateRRAdjustment(){
     let currentRR = parseFloat(document.getElementById('curr-rr-input').value) || 0;
@@ -162,7 +193,6 @@ function calculateRRAdjustment(){
 
 /**
  * Calculates the Adjusted Tidal Volume (TV).
- * Formula: TV_A (L) = (TV_curr (L) * PaCo2_curr (mmHg)) / PaCo2_des (mmHg)
  */
 function calculateTVAdjustment(){
     let currentTV = parseFloat(document.getElementById('curr-tv-input').value) || 0;
@@ -195,72 +225,21 @@ function calculateTVAdjustment(){
  * @param {HTMLElement} header - The clicked header element (h3).
  */
 function toggleNotes(header) {
-    // Get the next sibling element, which is the notes-content div
     const content = header.nextElementSibling;
     
     if (content.style.display === "block") {
         content.style.display = "none";
-        // Update the header text when collapsing
         header.innerHTML = '&#9432; Equation Notes & Formulas';
     } else {
         content.style.display = "block";
-        // Update the header text when expanding
         header.innerHTML = '&#9432; Equation Notes & Formulas (Click to Hide)';
     }
-}
-
-/**
- * Converts the value in the input field based on the old and new unit
- * and then triggers the main calculation.
- * @param {string} inputId - The ID of the input field (e.g., 'pi_height_input').
- * @param {string} unitId - The ID of the unit select (e.g., 'pi_height_unit').
- * @param {number} conversionFactor - The factor to convert to the metric base unit (e.g., CM_PER_IN or KG_PER_LB).
- */
-function convertUnitAndCalculate(inputId, unitId, conversionFactor) {
-    const inputElement = document.getElementById(inputId);
-    const unitElement = document.getElementById(unitId);
-    let value = parseFloat(inputElement.value) || 0;
-    
-    // Check for the "previous" unit stored temporarily via data-attribute
-    const previousUnit = unitElement.getAttribute('data-previous-unit');
-    const currentUnit = unitElement.value;
-
-    if (previousUnit && previousUnit !== currentUnit) {
-        // Conversion logic:
-        if (unitId === 'pi_height_unit') {
-            // Height: in <-> cm (Metric base is cm)
-            if (currentUnit === 'cm' && previousUnit === 'in') {
-                value = value * conversionFactor; // inches to cm
-            } else if (currentUnit === 'in' && previousUnit === 'cm') {
-                value = value / conversionFactor; // cm to inches
-            }
-        } else if (unitId === 'pi_weight_unit') {
-            // Weight: lb <-> kg (Metric base is kg)
-            // Note: conversionFactor here is KG_PER_LB (0.453592)
-            if (currentUnit === 'kg' && previousUnit === 'lb') {
-                value = value * conversionFactor; // lb to kg
-            } else if (currentUnit === 'lb' && previousUnit === 'kg') {
-                value = value / conversionFactor; // kg to lb
-            }
-        }
-        
-        // Update the input field with the converted value
-        inputElement.value = value.toFixed(2);
-    }
-    
-    // Store the current unit for the next change
-    unitElement.setAttribute('data-previous-unit', currentUnit);
-
-    // Always trigger the main calculation
-    calculatePVS();
 }
 
 
 // Function to set the initial previous unit data-attribute
 function initializeUnitTracking() {
-    // Set initial unit for Height
     document.getElementById('pi_height_unit').setAttribute('data-previous-unit', document.getElementById('pi_height_unit').value);
-    // Set initial unit for Weight
     document.getElementById('pi_weight_unit').setAttribute('data-previous-unit', document.getElementById('pi_weight_unit').value);
 }
 

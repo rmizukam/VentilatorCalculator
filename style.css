@@ -146,7 +146,7 @@ input[type="number"], input[type="text"], select {
     padding: 10px 15px;
     display: none; /* Hides the content by default */
     overflow: hidden;
-    overflow-x: auto;     
+    overflow-x: auto; /* Added for horizontal scrolling of equations */
     border-top: 1px solid #ccc;
 }
 

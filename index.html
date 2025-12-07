@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ventilator Adjustment Calculcator</title>
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h2>Ventilator Settings Calculator</h2>
@@ -28,7 +29,7 @@
                     <td>Height</td>
                     <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
-                        <select id="pi_height_unit" onchange="calculatePVS()">
+                        <select id="pi_height_unit" onchange="convertUnitAndCalculate('pi_height_input', 'pi_height_unit', CM_PER_IN)">
                             <option value="in" selected>in</option>
                             <option value="cm">cm</option>
                         </select>
@@ -38,7 +39,7 @@
                     <td>Weight</td>
                     <td><input type="number" id="pi_weight_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
-                        <select id="pi_weight_unit" onchange="calculatePVS()">
+                        <select id="pi_weight_unit" onchange="convertUnitAndCalculate('pi_weight_input', 'pi_weight_unit', KG_PER_LB)">
                             <option value="lb">lb</option>
                             <option value="kg" selected>kg</option>
                         </select>
@@ -157,7 +158,7 @@
                 $$ \text{IBW (kg)} = \begin{cases} 50 + 2.3 \times (\text{Height (in)} - 60) & \text{for Males} \\ 45.5 + 2.3 \times (\text{Height (in)} - 60) & \text{for Females} \end{cases} $$
                 <p>Note: When patient height is less than 60 in, a generic formula not gender reliant is utilized.</p>
                 $$\text{IBW (kg)} = 50 - (0.9 \times (60 - \text{Height(in)}))$$
-                
+
                 <h4>BSA (Body Surface Area)</h4>
                 <p>Calculated using the Mosteller Formula, where height is in cm and weight is in kg:</p>
                 $$ \text{BSA (m}^2) = \sqrt{\frac{\text{Height (cm)} \times \text{Weight (kg)}}{3600}} $$
@@ -222,7 +223,7 @@
                 <td><input type="number" id="curr-tv-input" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
                 <td>
                     <select id="tidal-volume-unit-adj-in" onchange="calculateTVAdjustment()">
-                        <option value="mL">mL</option>
+                        <option value="mL" selected>mL</option>
                         <option value="L">L</option>
                     </select>
                 </td>
@@ -236,7 +237,7 @@
                 <td id="result-adjusted-tv" colspan="2">0.00</td>
                 <td>
                     <select id="tidal-volume-unit-adj-out" onchange="calculateTVAdjustment()">
-                        <option value="mL">mL</option>
+                        <option value="mL" selected>mL</option>
                         <option value="L">L</option>
                     </select>
                 </td>
@@ -252,9 +253,9 @@
             <h4>Adjusted Tidal Volume (TV)</h4>
             <p>Calculated using the relationship between minute ventilation and PaCO2 (V̇E × PaCO2 = constant). This formula adjusts the tidal volume to achieve a desired PaCO2 level, assuming respiratory rate is held constant.</p>
             <p>Note: Input and output units (Liters or mL) are handled by the calculator's JavaScript before and after applying the formula.</p>
-            $$\text{TV}_{\text{adj}} = \frac{\text{TV}_{\text{curr}} \times \text{PaCO}_{\text{2\_curr}}}{\text{PaCO}_{\text{2\_des}}} $$
+            $$ \text{TV}_{\text{adj}} = \frac{\text{TV}_{\text{curr}} \times \text{PaCO}_{\text{2\_curr}}}{\text{PaCO}_{\text{2\_des}}} $$
         </div>
     </div>
-    <script src="script.js"></script>
-    </body>
+    <script src="script.js"></script> 
+</body>
 </html>
