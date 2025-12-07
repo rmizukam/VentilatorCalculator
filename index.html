@@ -23,7 +23,7 @@
             <tbody>
                 <tr>
                     <td>Height</td>
-                    <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()"></td>
+                    <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
                         <select id="pi_height_unit" onchange="calculatePVS()">
                             <option value="in" selected>in</option>
@@ -33,7 +33,7 @@
                 </tr>
                 <tr>
                     <td>Weight</td>
-                    <td><input type="number" id="pi_weight_input" value="0" oninput="calculatePVS()"></td>
+                    <td><input type="number" id="pi_weight_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
                         <select id="pi_weight_unit" onchange="calculatePVS()">
                             <option value="kg" selected>kg</option>
@@ -99,7 +99,7 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-option-4" name="choice" value="tvoption4" onchange="calculatePVS()">
+                                <input type="radio" id="tv-option-4" name="choice" value="tvoption4" onchange="calculatePVS()" onfocus="selectOnFocus(this)">
                                 <label for="tv-option-4">Custom</label>
                             </div>
                             <div class="tv-value-unit">
@@ -158,15 +158,15 @@
         <tbody>
             <tr>
                 <td>Current Respiratory Rate (breaths/min)</td>
-                <td><input type="number" id="curr-rr-input" value="0" oninput="calculateRRAdjustment()"></td>
+                <td><input type="number" id="curr-rr-input" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr>
                 <td>Current PaCO<sub>2</sub> (mmHg)</td> 
-                <td><input type="number" id="curr-pac02-rr" value="0" oninput="calculateRRAdjustment()"></td>
+                <td><input type="number" id="curr-pac02-rr" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr>
                 <td>Desired PaCO<sub>2</sub> (mmHg)</td> 
-                <td><input type="number" id="desired-pac02-rr" value="0" oninput="calculateRRAdjustment()"></td>
+                <td><input type="number" id="desired-pac02-rr" value="0" oninput="calculateRRAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr class="result-row">
                 <td>Adjusted Respiratory Rate (breaths/min)</td>
@@ -187,7 +187,7 @@
         <tbody>
             <tr>
                 <td>Current Tidal Volume </td>
-                <td><input type="number" id="curr-tv-input" value="0" oninput="calculateTVAdjustment()"></td>
+                <td><input type="number" id="curr-tv-input" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
                 <td>
                     <select id="tidal-volume-unit-adj-in" onchange="calculateTVAdjustment()">
                         <option value="mL" selected>mL</option>
@@ -197,11 +197,11 @@
             </tr>
             <tr>
                 <td>Current PaCO<sub>2</sub> (mmHg)</td> 
-                <td colspan="2"><input type="number" id="curr-pac02-tv" value="0" oninput="calculateTVAdjustment()"></td>
+                <td colspan="2"><input type="number" id="curr-pac02-tv" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr>
                 <td>Desired PaCO<sub>2</sub> (mmHg)</td> 
-                <td colspan="2"><input type="number" id="desired-pac02-tv" value="0" oninput="calculateTVAdjustment()"></td>
+                <td colspan="2"><input type="number" id="desired-pac02-tv" value="0" oninput="calculateTVAdjustment()" onfocus="selectOnFocus(this)"></td>
             </tr>
             <tr class="result-row">
                 <td>Adjusted Tidal Volume</td>

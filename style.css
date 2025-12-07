@@ -1,29 +1,29 @@
-/* --- Global & Body Styles --- */
+/* --- Global & Body Styles (No changes here) --- */
 body {
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px; /* Reduced padding for small screens */
+    padding: 10px; 
     background-color: #f4f4f9;
 }
 h2 {
     color: #333;
 }
 
-/* --- Container Styles --- */
+/* --- Container Styles (No changes here) --- */
 .patient-inputs, .grouped-calculations {
     margin-bottom: 20px;
-    width: 100%; /* Ensure full width usage on mobile */
+    width: 100%; 
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* --- Table Styles --- */
+/* --- Table Styles (No changes here) --- */
 table {
     border-collapse: collapse;
-    width: 95%; /* Increased width percentage for better mobile screen use */
+    width: 95%; 
     max-width: 800px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
@@ -31,7 +31,6 @@ table {
     margin-bottom: 20px;
 }
 
-/* Targets the Tidal Volume table specifically for tighter spacing within the patient inputs block */
 .patient-inputs > table:last-child {
     margin-bottom: 10px; 
 }
@@ -39,9 +38,9 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px; /* Reduced padding for smaller cells */
+    padding: 10px; /* Standard padding */
     text-align: center;
-    word-wrap: break-word; /* Prevents long text from breaking layout */
+    word-wrap: break-word; 
 }
 th {
     background-color: #007bff;
@@ -50,11 +49,11 @@ th {
 .table-title {
     background-color: #34495e;
     color: white;
-    font-size: 1.1em; /* Smaller title font on mobile */
+    font-size: 1.1em; 
     padding: 10px;
 }
 
-/* --- Input & Select Styles --- */
+/* --- Input & Select Styles (No changes here) --- */
 input[type="number"], input[type="text"], select {
     width: 100%; 
     box-sizing: border-box; 
@@ -65,15 +64,14 @@ input[type="number"], input[type="text"], select {
     font-size: 1em;
 }
 
-/* --- Result Row Styles --- */
+/* --- Result Row Styles (No changes here) --- */
 .result-row td {
     background-color: #d4edda;
     font-weight: bold;
-    font-size: 1.1em; /* Slightly smaller font */
+    font-size: 1.1em; 
     color: #155724;
 }
 
-/* Targets the result cell in the Adjustment 2: Tidal Volume table for alignment */
 #result-adjusted-tv {
     text-align: right; 
     padding-right: 5px; 
@@ -87,59 +85,75 @@ input[type="number"], input[type="text"], select {
     flex-direction: column; 
     align-items: center; 
     gap: 5px; 
-    padding: 5px;
+    /* REVERTED: Removed margin: 0 -2px; */
 }
 
-/* 2. Radio Button and Label: Makes the label text bold */
+/* 2. Radio Button and Label (No changes here) */
 .tv-radio-label label {
     font-weight: bold;
 }
 
-/* 3. Value and Unit Container: Align the input and the unit horizontally */
+/* 3. Value and Unit Container: Align the input and the unit horizontally (Flexbox for value/unit alignment) */
 .tv-value-unit {
     display: flex;
     align-items: baseline; 
     gap: 5px; 
     width: 100%; 
+    /* Pushes content to the right edge to avoid the overflow on the right */
+    justify-content: flex-end; 
 }
 
-/* 4. Style the unit text */
+/* 4. VALUE DOMINANCE: Make the input field consume most of the space */
+.tv-value-unit input[type="text"],
+.tv-value-unit input[type="number"] {
+    flex-grow: 1; 
+    /* Added max-width to ensure some space for the unit */
+    max-width: 80%;
+    width: auto; 
+}
+
+/* 5. Style the unit text */
 .tv-unit-text {
     width: auto; 
     font-size: 0.9em;
     color: #555;
     text-align: left; 
-    /* Ensures the unit text is not condensed when the input is focused */
+    /* Ensures the unit text never shrinks */
     flex-shrink: 0; 
 }
 
-/* 5. Mobile Optimization: Restructure the Tidal Volume Selection table */
+/* 6. Mobile Optimization (No changes here) */
 @media (max-width: 600px) {
-    /* Collapse the four columns into one column by making each TD full width */
     .patient-inputs table:nth-of-type(2) tbody tr td {
         display: block;
         width: 100%;
         box-sizing: border-box;
-        border-bottom: none; /* Remove horizontal border between options */
+        border-bottom: none; 
         border-left: none;
         border-right: none;
     }
     
-    /* Re-add a separating border to the bottom of each cell for clarity */
     .patient-inputs table:nth-of-type(2) tbody tr td:not(:last-child) {
         border-bottom: 1px solid #ddd;
     }
 
-    /* Adjust the main tables for better readability on small screens */
     table {
-        table-layout: auto; /* Allow column widths to adjust */
+        table-layout: auto; 
+    }
+    
+    #pi_height_unit, 
+    #pi_weight_unit,
+    #tidal-volume-unit-adj-in,
+    #tidal-volume-unit-adj-out {
+        width: 60px; 
+        min-width: 60px; 
+        padding: 5px; 
     }
 
-    /* Target the parameter/variable name columns and give them more space */
     .patient-inputs table:first-child td:first-child,
     .grouped-calculations table td:first-child,
-    body > table:nth-of-type(3) td:first-child, /* Adjustment 1 */
-    body > table:nth-of-type(4) td:first-child { /* Adjustment 2 */
+    body > table:nth-of-type(3) td:first-child, 
+    body > table:nth-of-type(4) td:first-child { 
         text-align: left;
     }
 }

@@ -3,6 +3,21 @@ const ML_PER_LITER = 1000;
 const CM_PER_IN = 2.54;
 
 /**
+ * Helper function to select all text in an input box when focused,
+ * ONLY if the current value is '0' or '0.00'.
+ * @param {HTMLElement} element - The input element (e.g., document.getElementById('pi_height_input')).
+ */
+function selectOnFocus(element) {
+    // Get the current value and trim any whitespace
+    const currentValue = element.value.trim();
+    
+    // Check if the value is numerically zero (handles '0', '0.0', '0.00', etc.)
+    if (parseFloat(currentValue) === 0) {
+        element.select();
+    }
+}
+
+/**
  * Determines which Tidal Volume radio button is selected (6, 7, or 8 ml/kg)
  * and returns its calculated value.
  * If the "Custom" option is selected, it returns the value from the custom input.
@@ -33,8 +48,6 @@ function getSelectedTidalVolume() {
         const valueElement = document.getElementById(valueElementId);
         if (valueElement) {
             // Use parseFloat to convert the string value to a number
-            // The calculated fields (tv-value-1, 2, 3) are already in mL, and 
-            // the custom field (tv-value-4) is expected to be in mL or the user's desired unit.
             selectedTV = parseFloat(valueElement.value) || 0;
         }
     }
@@ -118,7 +131,6 @@ function calculateRRAdjustment(){
  * Calculates the Tidal Volume (RR).
  * Formula: TV_A (L) = (TV_curr (L) * PaCo2_curr (mmHg)) / PaCo2_des (mmHg)
  */
-
 function calculateTVAdjustment(){
     let currentTV = parseFloat(document.getElementById('curr-tv-input').value) || 0;
     const tidalVolumeUnitIn = document.getElementById('tidal-volume-unit-adj-in').value;
@@ -137,6 +149,7 @@ function calculateTVAdjustment(){
     }
     document.getElementById('result-adjusted-tv').textContent = adjustedTV.toFixed(2);
 }
+
 // Initialize calculations on load
 calculatePVS();
 calculateRRAdjustment();
