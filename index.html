@@ -29,7 +29,7 @@
                     <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()" onfocus="selectOnFocus(this)"></td>
                     <td>
                         <select id="pi_height_unit" onchange="calculatePVS()">
-                            <option value="in">in</option>
+                            <option value="in" selected>in</option>
                             <option value="cm">cm</option>
                         </select>
                     </td>
@@ -40,7 +40,7 @@
                     <td>
                         <select id="pi_weight_unit" onchange="calculatePVS()">
                             <option value="lb">lb</option>
-                            <option value="kg">kg</option>
+                            <option value="kg" selected>kg</option>
                         </select>
                     </td>
                 </tr>
@@ -67,7 +67,7 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-radio-1" name="choice" value="tvoption1" onchange="calculatePVS()">
+                                <input type="radio" id="tv-radio-1" name="choice" value="tvoption1" onchange="calculatePVS()" checked>
                                 <label for="tv-radio-1">6 ml/kg</label>
                             </div>
                             <div class="tv-value-unit">
@@ -91,7 +91,7 @@
                     <td>
                         <div class="tv-option-container">
                             <div class="tv-radio-label">
-                                <input type="radio" id="tv-radio-3" name="choice" value="tvoption3" onchange="calculatePVS()" checked>
+                                <input type="radio" id="tv-radio-3" name="choice" value="tvoption3" onchange="calculatePVS()">
                                 <label for="tv-radio-3">8 ml/kg</label>
                             </div>
                             <div class="tv-value-unit">
