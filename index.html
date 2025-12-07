@@ -6,107 +6,145 @@
     <title>Ventilator Adjustment Calculcator</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>    
+<body>
     
-    <div class="grouped-calculations">
-
+    <div class="patient-inputs">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="table-title">BSA Calculation</th> </tr>
+                    <th colspan="3" class="table-title">Patient Inputs</th>
+                </tr>
                 <tr>
-                    <th>Variable Name</th>
-                    <th>Value (Input)</th>
-                    <th>Units</th> </tr>
+                    <th>Input Name</th>
+                    <th>Value</th>
+                    <th>Unit</th>
+                </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Height</td> 
-                    <td><input type="number" id="height_input" value="0" oninput="calculateBSA()"></td>
+                    <td>Height</td>
+                    <td><input type="number" id="pi_height_input" value="0" oninput="calculatePVS()"></td>
                     <td>
-                        <select id="height_unit" onchange="calculateBSA()">
-                            <option value="in">in</option>
+                        <select id="pi_height_unit" onchange="calculatePVS()">
+                            <option value="in" selected>in</option>
                             <option value="cm">cm</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>Weight</td>
-                    <td><input type="number" id="weight_input" value="0" oninput="calculateBSA()"></td>
+                    <td><input type="number" id="pi_weight_input" value="0" oninput="calculatePVS()"></td>
                     <td>
-                        <select id="weight_unit" onchange="calculateBSA()">
-                            <option value="lb">lb</option>
+                        <select id="pi_weight_unit" onchange="calculatePVS()">
                             <option value="kg" selected>kg</option>
+                            <option value="lb">lb</option>
                         </select>
                     </td>
                 </tr>
-                <tr class="result-row">
-                    <td>BSA (m<sup>2</sup>)</td>
-                    <td id="bsa-result" colspan="2">0.00</td> </tr>
-            </tbody>
-        </table>
-
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="2" class="table-title">Predicted Minute Ventilation</th> </tr>
-                <tr>
-                    <th>Variable Name</th>
-                    <th>Value (Input)</th>
-                </thead>
-            </tr>
-            <tbody>
                 <tr>
                     <td>Gender (M/F)</td>
-                    <td>
-                        <select id="gender_unit" onchange="calculatePredictedMinuteVentilation()">
+                    <td colspan="2">
+                        <select id="pi_gender_unit" onchange="calculatePVS()">
                             <option value="M" selected>M</option>
                             <option value="F">F</option>
                         </select>
                     </td>
                 </tr>
-                <tr>
-                    <td>BSA (m<sup>2</sup>)</td> 
-                    <td><input type="number" id="bsa_input" value="0" oninput="calculatePredictedMinuteVentilation()" readonly></td>
-                </tr>
-                <tr class="result-row">
-                    <td>Predicted Minute Ventilation (L/min)</td>
-                    <td id="result-predicted-mv">0.00</td> </tr>
             </tbody>
         </table>
-
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="table-title">Predicted Resipiratory Rate</th> </tr>
-                <tr>
-                    <th>Variable Name</th>
-                    <th>Value (Input)</th>
-                    <th>Units</th> </tr>
+                    <th colspan="4">Tidal Volume Selection</th>
+                </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Tidal Volume</td>
-                    <td><input type="number" id="tidal-volume-predict-input" value="0" oninput="calculatePredictedRespiratoryRate()"></td>
                     <td>
-                        <select id="tidal-volume-unit" onchange="calculatePredictedRespiratoryRate()">
-                            <option value="mL" selected>mL</option>
-                            <option value="L">L</option>
-                        </select>
+                        <div class="tv-option-container">
+                            <div class="tv-radio-label">
+                                <input type="radio" id="tv-option-1" name="choice" value="tvoption1" onchange="calculatePVS()">
+                                <label for="tv-option-1">6 ml/kg</label>
+                            </div>
+                            <div class="tv-value-unit">
+                                <input type="text" id="tv-value-1" name="tvvalue1" readonly class="tv-value-input">
+                                <span class="tv-unit-text">mL</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tv-option-container">
+                            <div class="tv-radio-label">
+                                <input type="radio" id="tv-option-2" name="choice" value="tvoption2" onchange="calculatePVS()">
+                                <label for="tv-option-2">7 ml/kg</label>
+                            </div>
+                            <div class="tv-value-unit">
+                                <input type="text" id="tv-value-2" name="tvvalue2" readonly>
+                                <span class="tv-unit-text">mL</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tv-option-container">
+                            <div class="tv-radio-label">
+                                <input type="radio" id="tv-option-3" name="choice" value="tvoption3" onchange="calculatePVS()">
+                                <label for="tv-option-3">8 ml/kg</label>
+                            </div>
+                            <div class="tv-value-unit">
+                                <input type="text" id="tv-value-3" name="tvvalue3" readonly>
+                                <span class="tv-unit-text">mL</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tv-option-container">
+                            <div class="tv-radio-label">
+                                <input type="radio" id="tv-option-4" name="choice" value="tvoption4" onchange="calculatePVS()">
+                                <label for="tv-option-4">Custom</label>
+                            </div>
+                            <div class="tv-value-unit">
+                                <input type="number" id="tv-value-4" name="tvvalue4">
+                                <span class="tv-unit-text">mL</span>
+                            </div>
+                        </div>
                     </td>
                 </tr>
-                <tr>
-                    <td>Predicted Minute Ventilation (L/min)</td> 
-                    <td><input type="number" id="predicted-mv-input" value="0" oninput="calculatePredictedRespiratoryRate()" readonly></td>
-                    
-                </tr>
-                <tr class="result-row">
-                    <td>Predicted Respiratory Rate (breaths/min)</td>
-                    <td id="result-predicted-rr" colspan="2">0.00</td> </tr>
             </tbody>
         </table>
+    </div>
 
+    <div class="grouped-calculations">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="table-title">Predicted Ventilator Settings</th>
+                </tr>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Value</th>
+                    <th>Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="result-row">
+                    <td>BSA</td>
+                    <td id="pr-bsa">0.00</td>
+                    <td>m<sup>2</sup></td>
+                </tr>
+                <tr class="result-row">
+                    <td>Minute Ventilation</td>
+                    <td id="pr-mv">0.00</td>
+                    <td>L/min</td>
+                </tr>
+                <tr class="result-row">
+                    <td>Respiratory Rate</td>
+                    <td id="pr-rr">0.00</td>
+                    <td>breaths/min</td>
+                </tr>
+            </tbody>
+        </table>
     </div> 
+
     <table>
         <thead>
             <tr>

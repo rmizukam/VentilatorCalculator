@@ -1,3 +1,4 @@
+/* --- Global & Body Styles --- */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -10,16 +11,16 @@ h2 {
     color: #333;
 }
 
-/* NEW: Styles for the grouped container */
-.grouped-calculations {
-    /* Adds a large space *after* the Predicted Respiratory Rate table */
-    margin-bottom: 50px; 
+/* --- Container Styles --- */
+.patient-inputs, .grouped-calculations {
+    margin-bottom: 20px; /* Use a consistent margin for separation */
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* --- Table Styles --- */
 table {
     border-collapse: collapse;
     width: 85%; 
@@ -27,27 +28,14 @@ table {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     table-layout: fixed;
-    /* IMPORTANT: Reduced margin-bottom to pull grouped tables closer */
+    margin-bottom: 20px; /* Consistent spacing between all standalone tables */
+}
+
+/* Targets the Tidal Volume table specifically for tighter spacing within the patient inputs block */
+.patient-inputs > table:last-child {
     margin-bottom: 10px; 
 }
 
-/* Targets the columns within the first and third tables (3 columns total) */
-table:nth-of-type(1) th:nth-child(1),
-table:nth-of-type(3) th:nth-child(1) { width: 45%; } /* Variable Name Column */
-table:nth-of-type(1) th:nth-child(2),
-table:nth-of-type(3) th:nth-child(2) { width: 30%; } /* Value Column */
-table:nth-of-type(1) th:nth-child(3),
-table:nth-of-type(3) th:nth-child(3) { width: 25%; } /* Units Column */
-
-/* Targets the columns within the second table (2 columns total) */
-table:nth-of-type(2) th:nth-child(1) { width: 70%; } /* Variable Name Column */
-table:nth-of-type(2) th:nth-child(2) { width: 30%; } /* Value/Input Column */
-
-/* Target the result cell (second column) in the final table */
-table:nth-of-type(5) td:nth-child(2) {
-    text-align: right; /* Right-align the number so it sits close to the unit dropdown */
-    padding-right: 5px; /* Reduce padding slightly */
-}
 
 th, td {
     border: 1px solid #ddd;
@@ -65,10 +53,10 @@ th {
     padding: 15px;
 }
 
-/* Ensures inputs and selects perfectly fill the table cell */
-input[type="number"], select {
-    width: 100%; /* Make it fill the cell width */
-    /* Box-sizing ensures padding and border are included INSIDE the 100% width, preventing overflow */
+/* --- Input & Select Styles --- */
+/* Ensures ALL inputs and selects fill the cell width (100%) */
+input[type="number"], input[type="text"], select {
+    width: 100%; 
     box-sizing: border-box; 
     padding: 8px;
     border: 1px solid #ccc;
@@ -77,6 +65,7 @@ input[type="number"], select {
     font-size: 1em;
 }
 
+/* --- Result Row Styles --- */
 .result-row td {
     background-color: #d4edda;
     font-weight: bold;
@@ -84,9 +73,46 @@ input[type="number"], select {
     color: #155724;
 }
 
-/* We need to apply a larger bottom margin to the tables *after* the grouped-calculations div to ensure the subsequent tables still have space below them. */
-/* Target tables that are NOT inside the grouped-calculations div */
-body > table:nth-of-type(1),
-body > table:nth-of-type(2) {
-    margin-bottom: 20px; 
+/* Targets the result cell in the Adjustment 2: Tidal Volume table for alignment */
+#result-adjusted-tv {
+    text-align: right; 
+    padding-right: 5px; 
+}
+
+/* --- Tidal Volume (Radio/Value) Layout Styles --- */
+
+/* 1. Main Container: Stack items vertically (column) */
+.tv-option-container {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 5px; 
+    padding: 5px;
+}
+
+/* 2. Radio Button and Label: Makes the label text bold */
+.tv-radio-label label {
+    font-weight: bold;
+}
+
+/* 3. Value and Unit Container: Align the input and the unit horizontally */
+.tv-value-unit {
+    display: flex;
+    align-items: baseline; 
+    gap: 5px; 
+    /* The unit needs to take up minimal space so the input can grow */
+    width: 100%; 
+}
+
+/* 4. REMOVED fixed width for #tv-value-1, #tv-value-2, #tv-value-3.
+   They now inherit the 100% width from the global input rule above, 
+   making them the same size as the custom input box (#tv-value-4). */
+
+/* 5. Override default 100% width for the unit span */
+.tv-unit-text {
+    /* Ensures unit text only takes up the space it needs */
+    width: auto; 
+    font-size: 0.9em;
+    color: #555;
+    text-align: left; /* Keep unit text aligned to the left of the cell */
 }

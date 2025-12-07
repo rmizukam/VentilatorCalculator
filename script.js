@@ -3,72 +3,105 @@ const ML_PER_LITER = 1000;
 const CM_PER_IN = 2.54;
 
 /**
- * Calculates Body Surface Area (BSA) and triggers the next calculation.
+ * Determines which Tidal Volume radio button is selected (6, 7, or 8 ml/kg)
+ * and returns its calculated value.
+ * If the "Custom" option is selected, it returns the value from the custom input.
+ * @returns {number} The selected Tidal Volume in milliliters (mL).
  */
-function calculateBSA() {   
-    let height = parseFloat(document.getElementById('height_input').value) || 0;
-    const heightUnit = document.getElementById('height_unit').value;
-    let weight = parseFloat(document.getElementById('weight_input').value) || 0;
-    const weightUnit = document.getElementById('weight_unit').value;
+function getSelectedTidalVolume() {
+    let selectedTV = 0;
+    
+    // 1. Get the checked radio button
+    const checkedRadio = document.querySelector('input[name="choice"]:checked');
+
+    if (checkedRadio) {
+        // 2. Determine the ID of the associated text input field
+        let valueElementId = '';
+        
+        // The value of the radio button corresponds to the value input ID suffix
+        if (checkedRadio.value === 'tvoption1') {
+            valueElementId = 'tv-value-1'; // 6 ml/kg
+        } else if (checkedRadio.value === 'tvoption2') {
+            valueElementId = 'tv-value-2'; // 7 ml/kg
+        } else if (checkedRadio.value === 'tvoption3') {
+            valueElementId = 'tv-value-3'; // 8 ml/kg
+        } else if (checkedRadio.value === 'tvoption4') {
+            valueElementId = 'tv-value-4'; // Custom input
+        }
+
+        // 3. Get the value from the corresponding input field
+        const valueElement = document.getElementById(valueElementId);
+        if (valueElement) {
+            // Use parseFloat to convert the string value to a number
+            // The calculated fields (tv-value-1, 2, 3) are already in mL, and 
+            // the custom field (tv-value-4) is expected to be in mL or the user's desired unit.
+            selectedTV = parseFloat(valueElement.value) || 0;
+        }
+    }
+    return selectedTV;
+}
+
+/**
+ * Calculates Predicted Ventilator Settings
+ */
+function calculatePVS(){
+
+    // Gather initial inputs
+    let height = parseFloat(document.getElementById('pi_height_input').value) || 0;
+    const heightUnit = document.getElementById('pi_height_unit').value;
+    let weight = parseFloat(document.getElementById('pi_weight_input').value) || 0;
+    const weightUnit = document.getElementById('pi_weight_unit').value;
     let height_cm = height;
     let weight_kg = weight;
     if (heightUnit === 'in') {
         height_cm = height * CM_PER_IN;
     }
     if (weightUnit === 'lb') {
-        weight_kg = weight * 0.453592; 
+        weight_kg = weight * 0.453592;
     }
-    let bsa_result = 0.00;
+    const genderUnit = document.getElementById('pi_gender_unit').value;
+
+    // Calcuate Tidal Volume Selection Zone
+    let ibw = 0.00;
+    if (height >= 60 && genderUnit == 'M'){
+        ibw = 50 + (2.3 * (height - 60));
+    } else if (height >= 60 && genderUnit == 'F'){
+        ibw = 45.5 + (2.3 * (height - 60));
+    } else{ // height less than 60
+        ibw = 50 + ((2 * 0.453592) * (height - 60));
+    }
+    let tv_6mlkg = ibw * 6;
+    let tv_7mlkg = ibw * 7;
+    let tv_8mlkg = ibw * 8;
+    if (height_cm > 0 && weight_kg > 0){
+        document.getElementById("tv-value-1").value = tv_6mlkg.toFixed(2);
+        document.getElementById("tv-value-2").value = tv_7mlkg.toFixed(2);
+        document.getElementById("tv-value-3").value = tv_8mlkg.toFixed(2);
+    }
+    let predicted_bsa = 0.00;
     if (height_cm > 0 && weight_kg > 0) {
         const valueInsideRoot = (height_cm * weight_kg) / 3600;
-        bsa_result = Math.sqrt(valueInsideRoot);
+        predicted_bsa = Math.sqrt(valueInsideRoot);
     }
-    const formattedBSA = bsa_result.toFixed(2);
+    const formattedBSA = predicted_bsa.toFixed(2);
     // Update the BSA result cell in the first table
-    document.getElementById('bsa-result').textContent = formattedBSA;
-    // AUTO-UPDATE: Set the value of the BSA input in the second table
-    document.getElementById('bsa_input').value = formattedBSA;
-    calculatePredictedMinuteVentilation(); 
-}
+    document.getElementById('pr-bsa').textContent = formattedBSA;
 
-/**
- * Calculates Predicted Minute Ventilation (MV) and chains to the third table.
- * Formula: MV (L/min) = BSA (m^2) * Factor (4 for M, 3.5 for F)
- */
-function calculatePredictedMinuteVentilation() {
-    const bsa = parseFloat(document.getElementById('bsa_input').value) || 0;
-    const genderUnit = document.getElementById('gender_unit').value;
+    // predicted minute ventilation
     let predictedMVFactor = (genderUnit === 'M') ? 4 : 3.5;
-    let predictedMV = bsa * predictedMVFactor;
-    const formattedMV = predictedMV.toFixed(2);
-    document.getElementById('result-predicted-mv').textContent = formattedMV;
-    document.getElementById('predicted-mv-input').value = formattedMV; 
-    calculatePredictedRespiratoryRate();
-}
+    let predicted_mv = 0.00;
+    predicted_mv = predicted_bsa * predictedMVFactor;
+    const formattedMV = predicted_mv.toFixed(2);
+    document.getElementById('pr-mv').textContent = formattedMV;
 
-/**
- * Calculates the Predicted Respiratory Rate (RR).
- * Formula: RR (breaths/min) = MV (L/min) / TV (L)
- */
-function calculatePredictedRespiratoryRate() {
-    let predicted_tv = parseFloat(document.getElementById('tidal-volume-predict-input').value) || 0;
-    const predicted_mv = parseFloat(document.getElementById('predicted-mv-input').value) || 0;
-    const tidalVolumeUnit = document.getElementById('tidal-volume-unit').value;
-    if (tidalVolumeUnit == 'mL') {
-        predicted_tv = predicted_tv / ML_PER_LITER;
+    // predicted respiratory rate
+    const tidalVolume = getSelectedTidalVolume();
+    let predicted_rr = 0.00;
+    if (tidalVolume > 0 && predicted_mv > 0){
+        predicted_rr = predicted_mv / (tidalVolume/1000);
     }
-    let predictedRR = 0.00;
-    if (predicted_tv > 0 && predicted_mv > 0) {
-        predictedRR = predicted_mv / predicted_tv;
-    }
-    // Update the result cell in the third table
-    document.getElementById('result-predicted-rr').textContent = predictedRR.toFixed(2); 
+    document.getElementById('pr-rr').textContent = predicted_rr.toFixed(2);
 }
-
-/**
- * Calculates the Adjusted Respiratory Rate (RR).
- * Formula: RR_A (breaths/min) = (RR_curr (breaths/min) * PaCo2_curr (mmHg)) / PaCo2_des (mmHg)
- */
 
 function calculateRRAdjustment(){
     let currentRR = parseFloat(document.getElementById('curr-rr-input').value) || 0;
@@ -105,6 +138,6 @@ function calculateTVAdjustment(){
     document.getElementById('result-adjusted-tv').textContent = adjustedTV.toFixed(2);
 }
 // Initialize calculations on load
-calculateBSA();
+calculatePVS();
 calculateRRAdjustment();
 calculateTVAdjustment();
