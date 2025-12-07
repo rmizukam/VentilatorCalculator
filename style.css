@@ -146,6 +146,7 @@ input[type="number"], input[type="text"], select {
     padding: 10px 15px;
     display: none; /* Hides the content by default */
     overflow: hidden;
+    overflow-x: auto;     
     border-top: 1px solid #ccc;
 }
 
